@@ -8,7 +8,7 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
 
-  // メニューアイテムの定義（KINETICSを含む全プロジェクト）
+  // メニューアイテムの定義
   const menuItems = [
     { label: "About", action: () => setShowAbout(true) },
     { label: "SILENCE (Salon)", path: "/salon" },
@@ -18,7 +18,6 @@ export default function Home() {
     { label: "Contact", path: "#" },
   ];
 
-  // 実績データ（カラー表示を想定した最新リスト）
   const screenshots = [
     {
       url: "/images/slide-salon.png",
@@ -61,7 +60,7 @@ export default function Home() {
         flexDirection: "column",
       }}
     >
-      {/* 1. ハンバーガーボタン（状態に応じて挙動を自動変化） */}
+      {/* 1. ハンバーガーボタン */}
       <button
         onClick={() => {
           if (showAbout) setShowAbout(false);
@@ -81,16 +80,12 @@ export default function Home() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          // 念のためボタン全体が削れないよう overflow を設定
           overflow: "visible",
         }}
       >
-        {/* コンテナの高さは偶数(16px)で維持 */}
         <div style={{ position: "relative", width: "20px", height: "16px" }}>
           <motion.span
             animate={{
-              // 交差をきれいにするため y軸の移動量を 7 -> 7.25 等で微調整するか、
-              // origin を指定して中心回転させます
               rotate: isOpen || showAbout ? 45 : 0,
               y: isOpen || showAbout ? 7.25 : 0,
             }}
@@ -99,19 +94,19 @@ export default function Home() {
               top: 0,
               left: 0,
               width: "100%",
-              height: "2px", // 1.5pxから2pxに変更（削れ防止の最も確実な方法）
+              height: "2px",
               backgroundColor: "white",
-              transformOrigin: "center center", // 回転軸を中心に固定
+              transformOrigin: "center center",
             }}
           />
           <motion.span
             animate={{ opacity: isOpen || showAbout ? 0 : 1 }}
             style={{
               position: "absolute",
-              top: "7px", // 中央配置
+              top: "7px",
               left: 0,
               width: "100%",
-              height: "2px", // 2pxに統一
+              height: "2px",
               backgroundColor: "white",
             }}
           />
@@ -122,16 +117,17 @@ export default function Home() {
             }}
             style={{
               position: "absolute",
-              bottom: 0, // ここが削れる場合、bottom: "1px" などで浮かせるのも手です
+              bottom: 0,
               left: 0,
               width: "100%",
-              height: "2px", // 2pxに統一
+              height: "2px",
               backgroundColor: "white",
-              transformOrigin: "center center", // 回転軸を中心に固定
+              transformOrigin: "center center",
             }}
           />
         </div>
       </button>
+
       {/* 2. メインロゴ */}
       <header
         style={{
@@ -161,7 +157,7 @@ export default function Home() {
         </motion.h1>
       </header>
 
-      {/* 3. 無限スクロールコンテナ（カラー表示版） */}
+      {/* 3. 無限スクロール */}
       <div
         style={{
           width: "100%",
@@ -208,7 +204,6 @@ export default function Home() {
                     backgroundImage: `url(${item.url})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
-                    filter: "none", // カラーで表示
                   }}
                 />
                 <div
@@ -244,7 +239,6 @@ export default function Home() {
         </motion.div>
       </div>
 
-      {/* 4. フッター */}
       <footer
         style={{
           position: "absolute",
@@ -264,7 +258,7 @@ export default function Home() {
         </p>
       </footer>
 
-      {/* 5. メニューオーバーレイ（KINETICS リンク追加） */}
+      {/* 5. メニューオーバーレイ（型エラー修正 & 頭文字整列版） */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -285,22 +279,55 @@ export default function Home() {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "30px",
-                textAlign: "center",
+                gap: "40px",
+                alignItems: "center",
               }}
             >
-              {menuItems.map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ y: 10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: i * 0.05 }}
+              {/* ABOUT: 中央配置 */}
+              <motion.div
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+              >
+                <div
+                  style={{
+                    fontSize: "clamp(2rem, 5vw, 3rem)",
+                    fontWeight: "900",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.15em",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    setShowAbout(true);
+                    setIsOpen(false);
+                  }}
                 >
-                  {item.path ? (
+                  <motion.span whileHover={{ x: 15, color: "#999" }}>
+                    ABOUT
+                  </motion.span>
+                </div>
+              </motion.div>
+
+              {/* プロジェクトリスト: 左揃えで頭文字をピシッと揃える */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "25px",
+                  alignItems: "flex-start",
+                }}
+              >
+                {menuItems.slice(1, 5).map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: i * 0.05 + 0.2 }}
+                  >
                     <Link
-                      href={item.path}
+                      href={item.path || "#"}
                       style={{
-                        fontSize: "clamp(2rem, 5vw, 3rem)",
+                        fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
                         fontWeight: "900",
                         textTransform: "uppercase",
                         letterSpacing: "0.15em",
@@ -313,34 +340,39 @@ export default function Home() {
                         {item.label}
                       </motion.span>
                     </Link>
-                  ) : (
-                    <div
-                      style={{
-                        fontSize: "clamp(2rem, 5vw, 3rem)",
-                        fontWeight: "900",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.15em",
-                        color: "black",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        item.action?.();
-                        setIsOpen(false);
-                      }}
-                    >
-                      <motion.span whileHover={{ x: 15, color: "#999" }}>
-                        {item.label}
-                      </motion.span>
-                    </div>
-                  )}
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* CONTACT: 中央配置 */}
+              <motion.div
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Link
+                  href="#"
+                  style={{
+                    fontSize: "clamp(2rem, 5vw, 3rem)",
+                    fontWeight: "900",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.15em",
+                    color: "black",
+                    textDecoration: "none",
+                  }}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <motion.span whileHover={{ x: 15, color: "#999" }}>
+                    CONTACT
+                  </motion.span>
+                </Link>
+              </motion.div>
             </nav>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 6. ABOUT プロフィール（ストーリー重視・フラットな技術解説） */}
+      {/* 6. ABOUT プロフィール */}
       <AnimatePresence>
         {showAbout && (
           <motion.div
@@ -393,7 +425,6 @@ export default function Home() {
                   DIRECTOR / K. SHIMAMOTO
                 </div>
               </motion.div>
-
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
